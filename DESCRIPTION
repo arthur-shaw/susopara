@@ -1,0 +1,24 @@
+Package: susopara
+Title: Extract Data And Insights from Survey Solutions' Paradata
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Arthur",
+           family = "Shaw",
+           role = c("aut", "cre"),
+           email = "jashaw2002@gmail.com")
+Description: Extract insights from Survey Solutions' paradata and questionnaire metadata.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
+Imports: 
+    assertthat,
+    dplyr,
+    glue,
+    lubridate,
+    rlang,
+    stringr,
+    tibble,
+    tidyjson,
+    tidyr
