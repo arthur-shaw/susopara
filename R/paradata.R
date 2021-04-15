@@ -69,7 +69,7 @@ calc_time_btw_active_events <- function(df) {
     event_duration <- df %>%
         # limit to actions by the interview or an unknown actor
         {if (how_role_stored == 1) dplyr::filter(., .data$role %in% c(0, 1)) else .} %>%
-        {if (how_role_stored == 2) dplyr::filter(., .data$role == "Interviewer") else .} %>%
+        {if (how_role_stored == 2) dplyr::filter(., .data$role == "Interviewer" | .data$role == "UNKNOWN ROLE") else .} %>%
         # remove non-interview events
         dplyr::filter(!.data$event %in% excluded_events) %>%
         # within each interview...
