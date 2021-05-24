@@ -1,3 +1,62 @@
+#' Read pardata from disk
+#' 
+#' Reads paradata using a fast method
+#' 
+#' @param file Full file path to the paradata file.
+#' 
+#' @return Data table
+#' 
+#' @importFrom data.table fread
+#' 
+#' @export 
+read_paradata <- function(file) {
+
+    # check that file exists
+    # if not, fail with error
+
+    dt <- data.table::fread(
+        input = file,
+        encoding = "UTF-8"  # recognize that contents are already UTF-8 encoded
+    )
+
+    return(dt)
+
+}
+
+#' Parse paradata file
+#' 
+#' Transforms paradata into a more usable format by splitting the `parameters` into its constituent pieces: `variable`, `value`, and `row`
+#' 
+#' @param dt Data table or data frame
+#' 
+#' @return Data table of pradata with three new columns: `variable`, `value`, and `row`.
+#' 
+#' @import data.table
+#' @importFrom lubridate ymd_hms
+#' 
+#' @export 
+parse_paradata <- function(dt) {
+
+    # avoid R CMD check warning by binding variable name to NULL
+    parameters <- NULL
+
+    # check that is data.table
+    # if not, convert to data.table and issue message to that effect
+    if (!data.table::is.data.table(dt)) {
+        dt <- data.table::as.data.table(dt)
+    }
+
+    # split "parameters" column into its constituent pieces: "variable", "value", "row"
+    dt <- dt[,c("variable", "value", "row") := data.table::tstrsplit(parameters, split = "||", fixed = TRUE)]
+
+    # convert timestamp into time
+    # TODO: test: how much time this adds, whether this is ever useful
+    # dt <- dt[, time := lubridate::ymd_hms(as.character(timestamp))]
+
+    return(dt)
+
+}
+
 #' Calculate time between active paradata events
 #'
 #' Determines active event durations by:
