@@ -4,18 +4,19 @@
 \alias{calc_time_btw_active_events}
 \title{Calculate time between active paradata events}
 \usage{
-calc_time_btw_active_events(df)
+calc_time_btw_active_events(dt)
 }
 \arguments{
-\item{df}{Data frame that is Survey Solutions' paradata}
+\item{dt}{Data table of the form produced by \code{parse_paradata}.}
 }
 \value{
-Data frame. Adds a few columns to the input data set: event duration in elapsed seconds (\code{elapsed_sec}) and minutes (\code{elapsed_min}). Removes passive events.
+Data table of active events with two new columns: \code{elapsed_sec} and \code{elapsed_min}
 }
 \description{
-Determines active event durations by:
+Computes duration as the difference between the timestamps of active events. To do so, this subsets to active events, computes durations, and handles some edge cases.
 }
 \details{
+Determines active event durations by:
 \itemize{
 \item Filtering out passive and non-interview events
 \item Computing difference between active events

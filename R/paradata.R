@@ -58,51 +58,60 @@ parse_paradata <- function(dt) {
 }
 
 #' Calculate time between active paradata events
-#'
+#' 
+#' Computes duration as the difference between the timestamps of active events. To do so, this subsets to active events, computes durations, and handles some edge cases.
+#' 
 #' Determines active event durations by:
-#'
+#' 
 #' - Filtering out passive and non-interview events
 #' - Computing difference between active events
-#'
+#' 
 #' Passive events include:
-#'
+#' 
 #' - Events of the following types in `event`: c("ApproveByHeadquarter", "ApproveBySupervisor", "ClosedBySupervisor", "KeyAssigned", "OpenedBySupervisor", "QuestionDeclaredInvalid", "QuestionDeclaredValid", "ReceivedByInterviewer", "ReceivedBySupervisor", "RejectedByHeadquarter", "RejectedBySupervisor", "SupervisorAssigned", "TranslationSwitched", "UnapproveByHeadquarters", "VariableDisabled", "VariableSet")
 #' - Pauses in the interview--that is, time between `Pause` and `Resume` events
 #' - End and resumption of the interview--that is between events and `Restarted` or between `Restarted` and an event
-#'
+#' 
 #' All other events are considered active
-#'
-#' @param df Data frame that is Survey Solutions' paradata
-#'
-#' @return Data frame. Adds a few columns to the input data set: event duration in elapsed seconds (`elapsed_sec`) and minutes (`elapsed_min`). Removes passive events.
-#'
+#' 
+#' @param dt Data table of the form produced by `parse_paradata`.
+#' 
+#' @return Data table of active events with two new columns: `elapsed_sec` and `elapsed_min`
+#' 
 #' @importFrom assertthat assert_that
-#' @import dplyr
-#' @importFrom rlang .data
-#' @importFrom lubridate ymd_hms make_difftime
 #' @importFrom glue glue glue_collapse
-#'
-#' @export
-calc_time_btw_active_events <- function(df) {
+#' @import data.table
+#' 
+#' @export 
+calc_time_btw_active_events <- function(dt) {
+
+    # avoid R CMD check warning by binding variable name to NULL
+    role <- event <- elapsed_sec <- time <- interview__id <- elapsed_min <- NULL
 
     # check inputs
     # `df` has expected columns
-    columns_expected <- c("interview__id", "order", "event", "responsible", "role", "timestamp", "offset", "parameters")
-    columns_found <- names(df)
+    columns_expected <- c("interview__id", "order", "event", "responsible", "role", "timestamp", "offset", "parameters", "variable", "value", "row", "time")
+    columns_found <- names(dt)
     assertthat::assert_that(
         all(columns_expected %in% columns_found),
         msg = glue::glue(
             "The paradata is missing some expected columns\n",
-            "Columns expected: ", glue::glue_collapse(columns_expected, sep = ", "), "\n",
-            "Columns found: ", glue::glue_collapse(columns_found, sep = ", ")
-        )
+            "Columns expected: ", glue::glue_collapse(columns_expected, sep = ", "), "\n", 
+            "Columns found: ", glue::glue_collapse(columns_found, sep = ", ") 
+        ) 
     )
+
+    # check that is data.table
+    # if not, convert to data.table and issue message to that effect
+    if (!is.data.table(dt)) {
+        dt <- as.data.table(dt)
+    }
 
     # determine how the actor's role is stored
     # so that filtering can be done correctly below
-    how_role_stored <- dplyr::case_when(
-        "1" %in% df$role ~ 1,
-        "Interviewer" %in% df$role ~ 2
+    how_role_stored <- data.table::fcase(
+        "1" %in% dt$role, 1,
+        "Interviewer" %in% dt$role, 2
     )
 
     # compile the types of events to exclude
@@ -120,63 +129,45 @@ calc_time_btw_active_events <- function(df) {
         "RejectedBySupervisor",
         "SupervisorAssigned",
         "TranslationSwitched",
-        "UnapproveByHeadquarters",
+        "UnapproveByHeadquarters",	
         "VariableDisabled",
         "VariableSet"
     )
 
-    event_duration <- df %>%
-        # limit to actions by the interview or an unknown actor
-        {if (how_role_stored == 1) dplyr::filter(., .data$role %in% c(0, 1)) else .} %>%
-        {if (how_role_stored == 2) dplyr::filter(., .data$role == "Interviewer" | .data$role == "UNKNOWN ROLE") else .} %>%
-        # remove non-interview events
-        dplyr::filter(!.data$event %in% excluded_events) %>%
-        # within each interview...
-        dplyr::group_by(.data$interview__id) %>%
-        # ... compute elapsed time as difference between two sequential active events
-        dplyr::mutate(
-            # parse timestamps as date-time
-            time = lubridate::ymd_hms(as.character(.data$timestamp)),
-            # compute elapsed time between each event as difftime expressed in seconds
-            elapsed_sec = lubridate::make_difftime(.data$time - dplyr::lag(.data$time), units = "seconds"),
-            # remove (i.e., set to 0) durations that are not active interviewing
-            # time between pause and resume
-            elapsed_sec = dplyr::if_else(.data$event == "Resumed" & dplyr::lag(.data$event) == "Paused",
-                true = lubridate::make_difftime(0, units = "seconds"),
-                false = .data$elapsed_sec,
-                missing = .data$elapsed_sec),
-            # time between event and resumed (i, e., when "Paused" event missing)
-            elapsed_sec = dplyr::if_else(.data$event == "Resumed",
-                true = lubridate::make_difftime(0, units = "seconds"),
-                false = .data$elapsed_sec,
-                missing = .data$elapsed_sec),
-            # time between pause and next event (i.e., when "Resumed" event missing)
-            elapsed_sec = dplyr::if_else(dplyr::lag(.data$event) == "Paused",
-                true = lubridate::make_difftime(0, units = "seconds"),
-                false = .data$elapsed_sec,
-                missing = .data$elapsed_sec),
-            # time between an event and pause (i.e., assume time between last active event and pause is not active)
-            elapsed_sec = dplyr::if_else(.data$event == "Paused",
-                true = lubridate::make_difftime(0, units = "seconds"),
-                false = .data$elapsed_sec,
-                missing = .data$elapsed_sec),
-            # remove time between event and Restarted or between restarting and event
-            elapsed_sec = dplyr::if_else(.data$event == "Restarted" | dplyr::lag(.data$event) == "Restarted",
-                true = lubridate::make_difftime(0, units = "seconds"),
-                false = .data$elapsed_sec,
-                missing = .data$elapsed_sec),
-            # compute time in seconds and minutes as numbers
-            # coerce difftime into number of seconds
-            elapsed_sec = as.numeric(.data$elapsed_sec),
-            # convert elapsed time from seconds to minutes
-            elapsed_min = .data$elapsed_sec/60
-            ) %>%
-        dplyr::ungroup()
+    # limit to actions by the interview or an unknown actor
+    if (how_role_stored == 1) {
+        dt <- dt[role %in% c(0, 1),]
+    } else if (how_role_stored == 2) {
+        dt <- dt[role == "Interviewer",]
+    }
 
-    return(event_duration)
+    # remove non-interview events
+    dt <- dt[!event %in% excluded_events,]
+    
+    # compute elapsed time between each event as difftime expressed in seconds
+    dt <- dt[, elapsed_sec := time - data.table::shift(time, type = "lag"), by = interview__id]
+
+    # write durations to 0 for time intervals that aren't of meaningful time spans
+    dt <- dt[
+        # between pause and resume
+        (event == "Resumed" & data.table::shift(event, type = "lag") == "Paused"), elapsed_sec := 0, by = interview__id][
+        # time between event and resumed (i, e., when "Paused" event missing)
+        event == "Resumed", elapsed_sec := 0, by = interview__id][
+        # time between pause and next event (i.e., when "Resumed" event missing)
+        data.table::shift(event, type = "lag") == "Paused", elapsed_sec := 0, by = interview__id][
+        # time between an event and pause (i.e., assume time between last active event and pause is not active)
+        event == "Paused", elapsed_sec := 0, by = interview__id][
+        # remove time between event and Restarted or between restarting and event
+        (event == "Restarted" | data.table::shift(event, type = "lag") == "Restarted"), elapsed_sec := 0, by = interview__id]
+
+    # convert elaped time to numeric and compute time in minutes
+    dt <- dt[, 
+        elapsed_sec := as.numeric(elapsed_sec)][
+        elapsed_min := elapsed_sec/60]
+
+    return(dt)
 
 }
-
 
 #' Summarize answer changes
 #'
