@@ -40,7 +40,7 @@
 
 
 <meta property="og:title" content="Calculate time between active paradata events — calc_time_btw_active_events" />
-<meta property="og:description" content="Determines active event durations by:" />
+<meta property="og:description" content="Computes duration as the difference between the timestamps of active events. To do so, this subsets to active events, computes durations, and handles some edge cases." />
 
 
 
@@ -109,27 +109,26 @@
     </div>
 
     <div class="ref-description">
-    <p>Determines active event durations by:</p>
+    <p>Computes duration as the difference between the timestamps of active events. To do so, this subsets to active events, computes durations, and handles some edge cases.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>calc_time_btw_active_events</span><span class='op'>(</span><span class='va'>df</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>calc_time_btw_active_events</span><span class='op'>(</span><span class='va'>dt</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>df</th>
-      <td><p>Data frame that is Survey Solutions' paradata</p></td>
+      <th>dt</th>
+      <td><p>Data table of the form produced by <code>parse_paradata</code>.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>Data frame. Adds a few columns to the input data set: event duration in elapsed seconds (<code>elapsed_sec</code>) and minutes (<code>elapsed_min</code>). Removes passive events.</p>
+    <p>Data table of active events with two new columns: <code>elapsed_sec</code> and <code>elapsed_min</code></p>
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    
-<ul>
+    <p>Determines active event durations by:</p><ul>
 <li><p>Filtering out passive and non-interview events</p></li>
 <li><p>Computing difference between active events</p></li>
 </ul>

@@ -6,6 +6,8 @@ reference:
   desc: >
     Compute statistics from [Survey Solutions' paradata](https://docs.mysurvey.solutions/headquarters/export/paradata_file_format/)
 - contents:
+  - read_paradata
+  - parse_paradata
   - calc_time_btw_active_events
   - count_answer_changes
   - summarize_answer_changes
