@@ -51,7 +51,7 @@ parse_paradata <- function(dt) {
 
     # convert timestamp into time
     # TODO: test: how much time this adds, whether this is ever useful
-    # dt <- dt[, time := lubridate::ymd_hms(as.character(timestamp))]
+    dt <- dt[, time := lubridate::ymd_hms(as.character(timestamp))]
 
     return(dt)
 
