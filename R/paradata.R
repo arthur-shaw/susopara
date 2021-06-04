@@ -162,7 +162,7 @@ calc_time_btw_active_events <- function(dt) {
 
     # convert elaped time to numeric and compute time in minutes
     dt <- dt[, 
-        elapsed_sec := as.numeric(elapsed_sec)][
+        elapsed_sec := as.numeric(elapsed_sec)][,
         elapsed_min := elapsed_sec/60]
 
     return(dt)
