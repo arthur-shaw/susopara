@@ -83,6 +83,7 @@ extract_values <- function(
 #' @import tidyjson
 #' @importFrom tibble as_tibble
 #' @importFrom dplyr select
+#' @importFrom rlang .data
 #' 
 #' @noRd 
 extract_properties <- function(x) {
@@ -152,6 +153,7 @@ extract_validations <- function(x) {
 #' @importFrom tibble as_tibble
 #' @importFrom tidyr pivot_wider
 #' @importFrom dplyr select
+#' @importFrom rlang .data
 #' 
 #' @noRd 
 extract_answers <- function(x) {
@@ -517,7 +519,8 @@ parse_questionnaire <- function(path) {
 #' 
 #' @return Named numeric vector. Values are answer codes. Names are answer labels.
 #' 
-#' @import dplyr
+#' @importFrom dplyr `%>%` filter select starts_with
+#' @importFrom rlang .data as_label expr
 #' @importFrom tidyr pivot_longer
 #' @importFrom stats setNames
 #' 
@@ -531,12 +534,12 @@ extract_answer_options <- function(
     # select answer and value columns from questionnaire data frame
     answer_options <- qnr_df %>%
         # find attributes for variable of interest
-        dplyr::filter(varname == as_label(expr({{varname}}))) %>%
+        dplyr::filter(varname == rlang::as_label(rlang::expr({{varname}}))) %>%
         # select columns that capture answer text and values
         dplyr::select(dplyr::starts_with("answer_text"), dplyr::starts_with("answer_value")) %>%
         # pivot so that option text and values occupy their own columns
         tidyr::pivot_longer(
-            cols = everything(),
+            cols = tidyr::everything(),
             names_to = c(".value", "index"),            # create 1 column per each value found in pattern, named what is found in expression
             names_pattern = "answer_([a-z]+)_([0-9]+)", # variable names: `answer_text_{n}` and `answer_value_{n}`
             values_drop_na = TRUE                       # drop rows that contain only NAs--that is, empty answer_text and answer_value columns

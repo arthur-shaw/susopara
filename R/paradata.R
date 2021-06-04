@@ -38,7 +38,7 @@ read_paradata <- function(file) {
 parse_paradata <- function(dt) {
 
     # avoid R CMD check warning by binding variable name to NULL
-    parameters <- NULL
+    parameters <- time <- timestamp <- NULL
 
     # check that is data.table
     # if not, convert to data.table and issue message to that effect
@@ -183,7 +183,8 @@ calc_time_btw_active_events <- function(dt) {
 #'
 #' @return Data frame.
 #'
-#' @import dplyr
+#' @importFrom dplyr `%>%` filter group_by ungroup summarize n_distinct mutate
+#' @importFrom rlang .data
 #' @importFrom stringr str_detect
 #' @importFrom tidyr separate
 #' @importFrom glue glue glue_collapse
@@ -231,7 +232,8 @@ summarize_answer_changes <- function(df) {
 #'
 #' @return Data frame.
 #'
-#' @import dplyr
+#' @importFrom dplyr `%>%` filter mutate group_by ungroup summarise across
+#' @importFrom rlang .data
 #' @importFrom stringr str_detect
 #' @importFrom tidyr separate
 #'
