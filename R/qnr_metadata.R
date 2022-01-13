@@ -37,7 +37,7 @@ extract_values <- function(
         instructions = tidyjson::jstring("Instructions"),
         question_type = tidyjson::jstring("QuestionType"),
         stata_export_caption = tidyjson::jstring("StataExportCaption"),
-        variable_label = tidyjson::jstring("Variablelabel"),
+        variable_label = tidyjson::jstring("VariableLabel"),
         is_timestamp = tidyjson::jstring("IsTimestamp"),
         is_filtered_combo_box = tidyjson::jstring("IsFilteredCombobox"),
 
