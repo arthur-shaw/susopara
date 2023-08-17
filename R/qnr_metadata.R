@@ -41,6 +41,7 @@ extract_values <- function(
         variable_label = tidyjson::jstring("VariableLabel"),
         is_timestamp = tidyjson::jstring("IsTimestamp"),
         is_filtered_combo_box = tidyjson::jstring("IsFilteredCombobox"),
+        linked_to_roster_id = tidyjson::jstring("LinkedToRosterId"),
 
         # question type-specific attributes
         # single-select
