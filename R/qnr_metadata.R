@@ -76,7 +76,7 @@ extract_values <- function(
         description = tidyjson::jstring("Description"), 
         is_roster = tidyjson::jlogical("IsRoster"),
         custom_roster_title = tidyjson::jstring("CustomRosterTitle"),
-        roster_size_source = tidyjson::jstring("RosterSizeSource"),
+        roster_size_source = tidyjson::jnumber("RosterSizeSource"),
         # fixed_roster_titles = --- this is an array -- "FixedRosterTitles": [],
         title = tidyjson::jstring("Title")
 
