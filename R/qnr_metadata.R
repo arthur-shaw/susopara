@@ -23,6 +23,7 @@ extract_values <- function(
         # question attributes
         mask = tidyjson::jstring("Mask"),
         is_integer = tidyjson::jlogical("IsInteger"),
+        num_decimal_places = tidyjson::jnumber("CountOfDecimalPlaces"),
         use_formatting_numeric = tidyjson::jlogical("UseFormatting"),
         answer_order = tidyjson::jnumber("AnswerOrder"),
         # children = -- this is an array
