@@ -21,14 +21,9 @@ extract_values <- function(
         hide_if_disabled = tidyjson::jlogical("HideIfDisabled"),
         
         # question attributes
-        mask = tidyjson::jstring("Mask"),
-        is_integer = tidyjson::jlogical("IsInteger"),
-        num_decimal_places = tidyjson::jnumber("CountOfDecimalPlaces"),
-        use_formatting_numeric = tidyjson::jlogical("UseFormatting"),
-        answer_order = tidyjson::jnumber("AnswerOrder"),
+        featured = tidyjson::jlogical("Featured"),
         # children = -- this is an array
         # answers = -- this is an array
-        featured = tidyjson::jlogical("Featured"),
         # properties = -- this is an object with named entries
             # hide_instructions
             # use_formatting
@@ -39,17 +34,26 @@ extract_values <- function(
         question_type = tidyjson::jstring("QuestionType"),
         stata_export_caption = tidyjson::jstring("StataExportCaption"),
         variable_label = tidyjson::jstring("VariableLabel"),
-        is_timestamp = tidyjson::jstring("IsTimestamp"),
-        is_filtered_combo_box = tidyjson::jstring("IsFilteredCombobox"),
-        linked_to_roster_id = tidyjson::jstring("LinkedToRosterId"),
-        linked_filter_expression = tidyjson::jstring("LinkedFilterExpression"),
 
         # question type-specific attributes
         # single-select
         show_as_list = tidyjson::jlogical("ShowAsList"),
         # multi-select
+        answer_order = tidyjson::jnumber("AnswerOrder"),
         are_answered_ordered = tidyjson::jlogical("AreAnswersOrdered"),
         yes_no_view = tidyjson::jlogical("YesNoView"),
+        # single- or mult-select
+        is_filtered_combo_box = tidyjson::jstring("IsFilteredCombobox"),
+        linked_to_roster_id = tidyjson::jstring("LinkedToRosterId"),
+        linked_filter_expression = tidyjson::jstring("LinkedFilterExpression"),        
+        # date
+        is_timestamp = tidyjson::jstring("IsTimestamp"),
+        # numeric
+        is_integer = tidyjson::jlogical("IsInteger"),
+        num_decimal_places = tidyjson::jnumber("CountOfDecimalPlaces"),
+        use_formatting_numeric = tidyjson::jlogical("UseFormatting"),
+        # text
+        mask = tidyjson::jstring("Mask"),
 
         # static text attributes
         text = tidyjson::jstring("Text"), # static text
