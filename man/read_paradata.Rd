@@ -2,16 +2,16 @@
 % Please edit documentation in R/paradata.R
 \name{read_paradata}
 \alias{read_paradata}
-\title{Read pardata from disk}
+\title{Read pardata file(s) from disk}
 \usage{
 read_paradata(file)
 }
 \arguments{
-\item{file}{Full file path to the paradata file.}
+\item{file}{Character vector. One or more full path to paradata file(s).}
 }
 \value{
 Data table
 }
 \description{
-Reads paradata using a fast method
+Reads paradata file(s) using a fast method
 }

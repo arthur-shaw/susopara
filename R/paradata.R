@@ -42,14 +42,17 @@ find_paradata <- function(
 
 }
 
+#' Read pardata file(s) from disk
 #' 
-#' Reads paradata using a fast method
+#' Reads paradata file(s) using a fast method
 #' 
-#' @param file Full file path to the paradata file.
+#' @param file Character vector. One or more full path to paradata file(s).
 #' 
 #' @return Data table
 #' 
 #' @importFrom data.table fread
+#' @importFrom purrr map
+#' @importFrom tidytable bind_rows
 #' 
 #' @export 
 read_paradata <- function(file) {
@@ -57,12 +60,19 @@ read_paradata <- function(file) {
     # check that file exists
     # if not, fail with error
 
-    dt <- data.table::fread(
-        input = file,
-        encoding = "UTF-8"  # recognize that contents are already UTF-8 encoded
+    # ingest paradata into a list of data.tables
+    para_dt_list <- purrr::map(
+        .x = file,
+        .f = ~ data.table::fread(
+            input = .x, 
+            encoding = "UTF-8"
+        )
     )
 
-    return(dt)
+    # consolidate list of data.tables into a single data.table
+    para_dt <- tidytable::bind_rows(para_dt_list)
+
+    return(para_dt)
 
 }
 
