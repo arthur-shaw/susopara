@@ -1,6 +1,6 @@
 Package: susopara
 Title: Extract Data And Insights from Survey Solutions' Paradata
-Version: 0.0.0.9000
+Version: 0.0.0.9001
 Authors@R: 
     person(given = "Arthur",
            family = "Shaw",
