@@ -8,6 +8,8 @@ Authors@R:
            email = "jashaw2002@gmail.com")
 Description: Extract insights from Survey Solutions' paradata and questionnaire metadata.
 License: MIT + file LICENSE
+URL: https://github.com/arthur-shaw/susopara
+BugReports: https://github.com/arthur-shaw/susopara/issues
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
