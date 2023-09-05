@@ -1,4 +1,47 @@
-#' Read pardata from disk
+#' Find paradata files
+#' 
+#' Return path(s) of paradata files found target path.
+#' 
+#' @param dir Character. Directory to scan for paradata files
+#' @param file_pattern Character. Default value is SuSo's default file name.
+#' @param recurse Boolean. Default value assumes that `dir` is parent diectory
+#' that contains child directories that contain the paradata.
+#' 
+#' @return Character vector of paths to paradata file(s).
+#' 
+#' @importFrom fs dir_ls
+#' @importFrom cli cli_abort
+#' 
+#' @export
+find_paradata <- function(
+    dir,
+    file_pattern = "paradata\\.tab",
+    recurse = TRUE
+) {
+
+    # scan for paradata files
+    paradata_file_paths <- fs::dir_ls(
+        path = dir,
+        type = "file",
+        regexp = file_pattern,
+        recurse = recurse
+    )
+
+    # return either paths or an error if no files found
+    if (length(paradata_file_paths) == 0) {
+        cli::cli_abort(
+            message = c(
+                "No paradata files found",
+                "*" = "Check that {.var path} is correct.",
+                "*" = "Check whether {.var recurse} scans child directories."
+            )
+        )
+    } else {
+        return(paradata_file_paths)
+    }
+
+}
+
 #' 
 #' Reads paradata using a fast method
 #' 
