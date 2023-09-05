@@ -14,12 +14,14 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
 Imports: 
     assertthat,
+    cli,
     data.table,
     dplyr,
+    fs,
     glue,
     lubridate,
+    purrr,
     rlang,
     stringr,
-    tibble,
-    tidyjson,
-    tidyr
+    tidyr,
+    tidytable
