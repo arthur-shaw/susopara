@@ -2,19 +2,18 @@ home:
   title: Extract insights from Survey Solutions' paradata and questionnaire metadata
 
 reference:
-- title: "Paradata"
+- title: "Parse"
+  desc: >
+    Find, ingest, and parse [Survey Solutions' paradata](https://docs.mysurvey.solutions/headquarters/export/paradata_file_format/)
+- contents:
+  - find_paradata
+  - read_paradata
+  - parse_paradata
+
+- title: "Compute"
   desc: >
     Compute statistics from [Survey Solutions' paradata](https://docs.mysurvey.solutions/headquarters/export/paradata_file_format/)
 - contents:
-  - read_paradata
-  - parse_paradata
   - calc_time_btw_active_events
   - count_answer_changes
   - summarize_answer_changes
-
-- title: "Questionnaire metadata"
-  desc: >
-    Extract information from the questionnaire JSON file.
-- contents:
-  - parse_questionnaire
-  - extract_answer_options
