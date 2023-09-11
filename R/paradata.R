@@ -102,6 +102,11 @@ parse_paradata <- function(dt) {
     # split "parameters" column into its constituent pieces: "variable", "value", "row"
     dt <- dt[,c("variable", "value", "row") := data.table::tstrsplit(parameters, split = "||", fixed = TRUE)]
 
+    # correctly recognize 2nd part of param in AnswerRemoved events as row index
+    # set row as value; set value as NA
+    dt[event == "AnswerRemoved" & !is.na(value), row := value]
+    dt[event == "AnswerRemoved", value := NA]
+
     # convert timestamp into time
     # TODO: test: how much time this adds, whether this is ever useful
     dt <- dt[, time := lubridate::ymd_hms(as.character(timestamp))]
