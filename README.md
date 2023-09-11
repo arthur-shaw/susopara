@@ -19,5 +19,5 @@ command:
 
 ``` r
 if (!require("pak")) install.packages("pak")
-pak::pak("lsms-worldbank/susometa")
+pak::pak("arthur-shaw/susopara")
 ```

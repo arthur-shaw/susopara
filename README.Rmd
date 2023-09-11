@@ -28,5 +28,5 @@ The package is not yet on CRAN, but can be installed via the following command:
 
 ``` r
 if (!require("pak")) install.packages("pak")
-pak::pak("lsms-worldbank/susometa")
+pak::pak("arthur-shaw/susopara")
 ```
