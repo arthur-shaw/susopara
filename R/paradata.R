@@ -91,7 +91,7 @@ read_paradata <- function(file) {
 parse_paradata <- function(dt) {
 
     # avoid R CMD check warning by binding variable name to NULL
-    parameters <- time <- timestamp <- NULL
+    parameters <- time <- timestamp <- timestamp_utc <- event <- value <- NULL
 
     # check that is data.table
     # if not, convert to data.table and issue message to that effect
@@ -108,8 +108,15 @@ parse_paradata <- function(dt) {
     dt[event == "AnswerRemoved", value := NA]
 
     # convert timestamp into time
-    # TODO: test: how much time this adds, whether this is ever useful
-    dt <- dt[, time := lubridate::ymd_hms(as.character(timestamp))]
+    # note: accommodate different names for the event timestamp column
+    col_names <- names(dt)
+    # older file schema, prior to 21.09 (?)
+    if ("timestamp" %in% col_names) {
+        dt <- dt[, time := lubridate::ymd_hms(as.character(timestamp))]
+    # current file schema
+    } else if ("timestamp_utc" %in% col_names) {
+        dt <- dt[, time := lubridate::ymd_hms(as.character(timestamp_utc))]
+    }
 
     return(dt)
 
@@ -148,13 +155,19 @@ calc_time_btw_active_events <- function(dt) {
 
     # check inputs
     # `df` has expected columns
-    columns_expected <- c("interview__id", "order", "event", "responsible", "role", "timestamp", "offset", "parameters", "variable", "value", "row", "time")
+    columns_expected_old <- c("interview__id", "order", "event", "responsible", "role", "timestamp", "offset", "parameters", "variable", "value", "row", "time")
+    columns_expected_new <- c("interview__id", "order", "event", "responsible", "role", "timestamp_utc", "tz_offset", "parameters", "variable", "value", "row", "time")
     columns_found <- names(dt)
     assertthat::assert_that(
-        all(columns_expected %in% columns_found),
+        (
+            all(columns_expected_old %in% columns_found) |
+            all(columns_expected_new %in% columns_found)
+        ),
         msg = glue::glue(
             "The paradata is missing some expected columns\n",
-            "Columns expected: ", glue::glue_collapse(columns_expected, sep = ", "), "\n", 
+            "Columns expected:\n", 
+            "- For files from SuSo 21.09 and earlier", glue::glue_collapse(columns_expected_old, sep = ", "), "\n", 
+            "- For files after SuSo 21.09", glue::glue_collapse(columns_expected_new, sep = ", "), "\n", 
             "Columns found: ", glue::glue_collapse(columns_found, sep = ", ") 
         ) 
     )
